@@ -1,0 +1,14 @@
+# Compiled Object files
+*.o
+
+# Editor backup
+*~
+
+# Executables
+*.out
+
+# Generados por bison y flex
+parser.tab.h
+parser.tab.c
+lex.yy.c
+

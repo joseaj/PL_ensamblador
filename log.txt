@@ -1,0 +1,20 @@
+$ git config --global user.name "José A. Jiménez“
+$ git config --global user.emal “joseantonio.jimenez@uca.es”
+
+---------------------------------------
+
+Editar el archivo .gitignore
+https://github.com/github/gitignore
+
+---------------------------------------
+
+Desde dentro del directorio
+
+$ cd PL_ensamblador
+PL_ensamblador$ git init
+Initialized empty Git repository in /home/jose/Escritorio/PL_ensamblador/.git/
+
+------------------------------------------
+
+Crear una repo en GitHub con el mismo nombre que el directorio
+
