@@ -13,6 +13,11 @@ Desde dentro del directorio
 $ cd PL_ensamblador
 PL_ensamblador$ git init
 Initialized empty Git repository in /home/jose/Escritorio/PL_ensamblador/.git/
+$ touch README.md
+$ git add .
+$ git commit -a -m "Primer Commit"
+$ git remote add origin https://github.com/joseaj/PL_ensamblador.git
+$ git push -u origin master
 
 ------------------------------------------
 
