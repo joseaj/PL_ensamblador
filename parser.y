@@ -11,7 +11,7 @@ int yyerror(const char*);
 
 %}
 
-%token NUM ID
+%token NUM ID VARIABLE FUNCION
 
 %union {
   std::string * nombre;
@@ -23,14 +23,32 @@ int yyerror(const char*);
 
 %%
 
-entrada: expr {cout << "\n\tpushl\t%eax\n\tpushl\t$cadena\n\tcall\tprintf\n\taddl\t$8, %esp\n\n";} ';' entrada
+entrada: entrada defGlobal
        |
        ;
 
-expr: expr '+' {cout << "\tpushl\t%eax\n";} sum {cout << "\tmovl\t%eax, %ebx\n\tpopl\t%eax\n\taddl\t%ebx, %eax\n";}
-    | expr '-' {cout << "\tpushl\t%eax\n";} sum {cout << "\tmovl\t%eax, %ebx\n\tpopl\t%eax\n\tsubl\t%ebx, %eax\n";}
-    | sum
-    ;
+defGlobal : VARIABLE vars ';'
+          | VARIABLE ID '=' FUNCION '('  ')' '{' exprs '}'
+          | VARIABLE ID '=' FUNCION '(' vars  ')' '{' exprs '}'
+          ;
+
+vars : vars ',' ID
+     | ID
+     ;
+
+exprs : exprs expr
+      |
+      ;
+
+expr : VARIABLE vars ';'
+     | ID '=' aritm {cout << "\n\tpushl\t%eax\n\tpushl\t$cadena\n\tcall\tprintf\n\taddl\t$8, %esp\n\n";} ';'
+     | aritm  {cout << "\n\tpushl\t%eax\n\tpushl\t$cadena\n\tcall\tprintf\n\taddl\t$8, %esp\n\n";} ';'
+     ;
+
+aritm: aritm '+' {cout << "\tpushl\t%eax\n";} sum {cout << "\tmovl\t%eax, %ebx\n\tpopl\t%eax\n\taddl\t%ebx, %eax\n";}
+     | aritm '-' {cout << "\tpushl\t%eax\n";} sum {cout << "\tmovl\t%eax, %ebx\n\tpopl\t%eax\n\tsubl\t%ebx, %eax\n";}
+     | sum
+     ;
 
 sum: sum '*' {cout << "\tpushl\t%eax\n";} factor {cout << "\tmovl\t%eax, %ebx\n\tpopl\t%eax\n\timull\t%ebx, %eax\n";}
    | sum '/' {cout << "\tpushl\t%eax\n";} factor {cout << "\tmovl\t%eax, %ebx\n\tpopl\t%eax\n\tcdq\n\tidivl\t%ebx, %eax\n";}
@@ -38,7 +56,7 @@ sum: sum '*' {cout << "\tpushl\t%eax\n";} factor {cout << "\tmovl\t%eax, %ebx\n\
    | factor
    ;
 
-factor: '(' expr ')'
+factor: '(' aritm ')'
       | NUM   { cout << "\tmovl\t$" << *$1 << ", %eax\n";}
       | ID
       | '-' factor {cout << "\tneg\t%eax\n";}

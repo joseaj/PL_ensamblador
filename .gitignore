@@ -12,6 +12,7 @@ compilador
 parser.tab.h
 parser.tab.c
 lex.yy.c
+*.output
 
 # ensamblador generado por nuestro compilador
 *.s

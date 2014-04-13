@@ -16,7 +16,7 @@ lex.yy.o: lex.yy.c parser.tab.h
 	$(CC) -c lex.yy.c
 
 clean:
-	rm -f *~ *.o parser.tab.c parser.tab.h lex.yy.c
+	rm -f *~ .*~ *.o parser.tab.c parser.tab.h lex.yy.c
 
 prueba:
 	./compilador < entrada.txt > salida.s ; cat salida.s ; gcc salida.s ; ./a.out

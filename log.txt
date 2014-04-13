@@ -8,6 +8,10 @@ https://github.com/github/gitignore
 
 ---------------------------------------
 
+Crear una repo en GitHub con el mismo nombre que el directorio
+
+--------------------------------------------------------
+
 Desde dentro del directorio
 
 $ cd PL_ensamblador
@@ -19,7 +23,136 @@ $ git commit -a -m "Primer Commit"
 $ git remote add origin https://github.com/joseaj/PL_ensamblador.git
 $ git push -u origin master
 
-------------------------------------------
+=====================================================
 
-Crear una repo en GitHub con el mismo nombre que el directorio
+*** Git Branches ****
+
+Usaremos tres ramas:
+-> master
+-> funciones
+-> develop
+
+# crea una rama llamada 'funciones' y cambia a ella
+$ git checkout -b funciones
+# comprueba en qué rama estamos
+$ git branch
+# empuja a github el contenido de la rama
+$ git push -u origin funciones
+
+# Crea una nueva rama llamada 'develop' y cambia a ella
+$ git checkout -b develop
+# Comprueba en qué rama estamos
+$ git branch
+# Empuja, a github, el contenido de la rama
+$ git push -u origin develop
+
+-----------------------------------------------
+
+# para movernos a una rama ya existente sin crear una rama nueva
+$ git checkout develop
+# Comprobamos donde estamos
+$ git branch
+
+Hacemos todos los cambios al código y luego lo volcamos a github
+
+$ git commit -a -m "Nuevo commit"
+$ git push -u origin develop
+
+==========================================================
+
+Para volver a un commit anterior ....
+
+Primero, investiga los commits
+$ git log
+
+Supón que obtienes la siguiente salida:
+
+[root@me dev]# git log
+commit a867b4af366350be2e7c21b8de9cc6504678a61b`
+Author: Me 
+Date:   Thu Nov 4 18:59:41 2010 -0400
+
+blah blah blah...
+
+commit 25eee4caef46ae64aa08e8ab3f988bc917ee1ce4
+Author: Me 
+Date:   Thu Nov 4 05:13:39 2010 -0400
+
+more blah blah blah...
+
+commit 0766c053c0ea2035e90f504928f8df3c9363b8bd
+Author: Me 
+Date:   Thu Nov 4 00:55:06 2010 -0400
+
+And yet more blah blah...
+
+commit 0d1d7fc32e5a947fbd92ee598033d85bfc445a50
+Author: Me 
+Date:   Wed Nov 3 23:56:08 2010 -0400
+
+Yep, more blah blah.
+----------------------------------------------
+¿Cómo volver al commit del 3 de Noviembre?
+----------------------------------------------
+
+This depends a lot on what you mean by "revert".
+
+a) If you want to temporarily go back to it, fool around, then come back to where you are, all you have to do is check out the desired commit:
+
+# This will detach your HEAD, i.e. leave you with no branch checked out:
+git checkout 0d1d7fc32
+
+or if you want to make commits while you're there, go ahead and make a new branch while you're at it:
+
+git checkout -b old-state 0d1d7fc32
+
+b) If, on the other hand, you want to really get rid of everything you've done since then, there are two possibilities.
+
+b.1) One, if you haven't published any of these commits, simply reset:
+
+# This will destroy any local modifications.
+# Don't do it if you have uncommitted work you want to keep.
+$ git reset --hard 0d1d7fc32
+
+# Alternatively, if there's work to keep:
+$ git stash
+$ git reset --hard 0d1d7fc32
+$ git stash pop
+# This saves the modifications, then reapplies that patch after resetting.
+# You could get merge conflicts, if you've modified things which were
+# changed since the commit you reset to
+
+b.2) On the other hand, if you've published the work, you probably don't want to reset the branch, since that's effectively rewriting history. In that case, you could indeed revert the commits. With git, revert has a very specific meaning: create a commit with the reverse patch to cancel it out. This way you don't rewrite any history.
+
+# This will create three separate revert commits:
+$ git revert 0766c053 25eee4ca a867b4af
+
+# It also takes ranges. This will revert the last two commits:
+$ git revert HEAD~2..HEAD
+
+# To get just one, you could use `rebase -i` to squash them afterwards
+# Or, you could do it manually (be sure to do this at top level of the repo)
+# get your index and work tree into the desired state, without changing HEAD:
+$ git checkout 0d1d7fc32 .
+# and then commit
+$ git commit    # be sure and write a good message describing what you just did
+
+==================================================================
+
+Una vez que veamos bien el código de la rama 'develop' lo nezclamos (merge) a la rama 'funciones'
+
+Para saber donde estamos
+$ git branch
+Nos movemos a la rama 'funciones'
+$ git checkout funciones
+Mezclamos el código de la rama actual (funciones) con el que hay en la rama 'develop'
+$ git merge develop
+$ git push -u origin funciones
+
+
+=====================================================================
+
+
+
+
 
