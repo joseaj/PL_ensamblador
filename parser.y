@@ -4,6 +4,8 @@
 
 using namespace std;
 
+#include "nodo.h"
+
 #define YYERROR_VERBOSE
 
 int yylex();
@@ -16,9 +18,11 @@ int yyerror(const char*);
 %union {
   std::string * nombre;
   int valor;
+  class Nodo *n;
 }
 
 %type <nombre> NUM ID
+%type <n> expr aritm sum factor
 
 
 %%
@@ -36,30 +40,30 @@ vars : vars ',' ID
      | ID
      ;
 
-exprs : exprs expr
+exprs : exprs expr {cout << $2->ensamblador() << endl;}
       |
       ;
 
-expr : VARIABLE vars ';'
-     | ID '=' aritm {cout << "\n\tpushl\t%eax\n\tpushl\t$cadena\n\tcall\tprintf\n\taddl\t$8, %esp\n\n";} ';'
-     | aritm  {cout << "\n\tpushl\t%eax\n\tpushl\t$cadena\n\tcall\tprintf\n\taddl\t$8, %esp\n\n";} ';'
+expr : VARIABLE vars ';' {$$ = 0;}
+     | ID '=' aritm ';' {$$ = new NodoAsig(*$1, $3);}
+     | aritm ';' {$$ = new NodoAritmetico($1);}
      ;
 
-aritm: aritm '+' {cout << "\tpushl\t%eax\n";} sum {cout << "\tmovl\t%eax, %ebx\n\tpopl\t%eax\n\taddl\t%ebx, %eax\n";}
-     | aritm '-' {cout << "\tpushl\t%eax\n";} sum {cout << "\tmovl\t%eax, %ebx\n\tpopl\t%eax\n\tsubl\t%ebx, %eax\n";}
-     | sum
+aritm: aritm '+' sum {$$ = new NodoSuma($1, $3);}
+     | aritm '-' sum {$$ = new NodoResta($1, $3);}
+     | sum {$$ = $1;}
      ;
 
-sum: sum '*' {cout << "\tpushl\t%eax\n";} factor {cout << "\tmovl\t%eax, %ebx\n\tpopl\t%eax\n\timull\t%ebx, %eax\n";}
-   | sum '/' {cout << "\tpushl\t%eax\n";} factor {cout << "\tmovl\t%eax, %ebx\n\tpopl\t%eax\n\tcdq\n\tidivl\t%ebx, %eax\n";}
-   | sum '%' {cout << "\tpushl\t%eax\n";} factor {cout << "\tmovl\t%eax, %ebx\n\tpopl\t%eax\n\tcdq\n\tidivl\t%ebx, %eax\n\tmovl\t%edx, %eax\n";}
-   | factor
+sum: sum '*' factor {$$ = new NodoProducto($1, $3);}
+   | sum '/' factor {$$ = new NodoDivision($1, $3);}
+   | sum '%' factor {$$ = new NodoModulo($1, $3);}
+   | factor {$$ = $1;}
    ;
 
-factor: '(' aritm ')'
-      | NUM   { cout << "\tmovl\t$" << *$1 << ", %eax\n";}
-      | ID
-      | '-' factor {cout << "\tneg\t%eax\n";}
+factor: '(' aritm ')' {$$ = $2;}
+      | NUM   {$$ = new NodoNum(*$1);}
+      | ID    {$$ = new NodoID(*$1);}
+      | '-' factor {$$ = new NodoMenosUnario($2);}
       ;
 
 %%

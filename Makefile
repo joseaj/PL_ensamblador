@@ -1,4 +1,4 @@
-CC=g++
+CC=g++ -std=c++11
 
 compilador: parser.tab.o lex.yy.o
 	$(CC) -o compilador parser.tab.o lex.yy.o

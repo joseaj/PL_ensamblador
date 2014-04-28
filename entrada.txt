@@ -1,7 +1,7 @@
 var x;
 
 var main = function (m, n) {
-  var a, b;
+  //var a, b;
   5;
   2+3;
   2+3*2-(5%3);
